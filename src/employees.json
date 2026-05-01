@@ -449,6 +449,61 @@
       "department": "Logistics",
       "dateOfEmployment": "2026-02-11",
       "terminationDate": null
+    },
+    {
+      "code": "EMP0051",
+      "fullName": "Boban Moshevski",
+      "occupation": "IT Support",
+      "department": "Research",
+      "dateOfEmployment": "2026-04-28",
+      "terminationDate": "2026-03-11",
+      "id": "-7nnFBWnlAk"
+    },
+    {
+      "code": "ASD",
+      "fullName": "asd",
+      "occupation": "asd",
+      "department": "asd",
+      "dateOfEmployment": "",
+      "terminationDate": "",
+      "id": "iDeLXCxwkqs"
+    },
+    {
+      "code": "EMP0051",
+      "fullName": "Boban Moshevski",
+      "occupation": "asd",
+      "department": "asd",
+      "dateOfEmployment": "2026-07-21",
+      "terminationDate": "2026-08-19",
+      "id": "lGundQ1XFOY"
+    },
+    {
+      "code": "EMP0051",
+      "fullName": "Boban Moshevski",
+      "occupation": "asd",
+      "department": "Research",
+      "dateOfEmployment": "2026-04-28",
+      "terminationDate": "2026-04-28",
+      "id": "8GKW3BnGbsQ"
+    },
+    {
+      "code": "EMP0051",
+      "fullName": "Boban Moshevski",
+      "occupation": "asd",
+      "department": "Research",
+      "dateOfEmployment": "",
+      "terminationDate": "",
+      "id": "3vynfjK4jXk"
+    },
+    {
+      "code": "EMP0051",
+      "fullName": "Boban Moshevski",
+      "occupation": "asd",
+      "department": "Research",
+      "dateOfEmployment": "",
+      "terminationDate": "",
+      "id": "RdwTcqHxqXE"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
