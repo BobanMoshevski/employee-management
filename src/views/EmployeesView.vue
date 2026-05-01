@@ -5,18 +5,19 @@ import { ClipLoader } from "vue-spinner";
 import { useToast } from "vue-toastification";
 import axios from "axios";
 
+// Global state for employees data + loading indicator
 const state = reactive({
   employees: [],
   isLoading: true,
 });
 
-// Filter State
-const searchQuery = ref("");
-const filterKey = ref("");
+// Search / filter state
+const searchQuery = ref(""); // user search input
+const filterKey = ref(""); // selected field to filter by
 
-// Sort State
-const sortKey = ref("");
-const sortOrder = ref("asc");
+// Sorting state
+const sortKey = ref(""); // field to sort by
+const sortOrder = ref("asc"); // asc or desc
 
 // Pagination State
 const currentPage = ref(1);
@@ -24,7 +25,10 @@ const itemsPerPage = 10;
 
 const toast = useToast();
 
-// Employment Status
+/**
+ * Returns human-readable employment status
+ * based on employment date comparison with today
+ */
 const getEmploymentStatus = (dateOfEmployment) => {
   if (!dateOfEmployment) {
     return "No date selected";
@@ -33,6 +37,7 @@ const getEmploymentStatus = (dateOfEmployment) => {
   const today = new Date();
   const employmentDate = new Date(dateOfEmployment);
 
+  // Normalize time to avoid time comparison issues
   today.setHours(0, 0, 0, 0);
   employmentDate.setHours(0, 0, 0, 0);
 
@@ -43,7 +48,9 @@ const getEmploymentStatus = (dateOfEmployment) => {
   return "Currently employed";
 };
 
-// Termination Status
+/**
+ * Returns termination status based on termination date
+ */
 const getTerminationStatus = (terminationDate) => {
   if (!terminationDate) {
     return "No date selected";
@@ -62,13 +69,17 @@ const getTerminationStatus = (terminationDate) => {
   return "Terminated";
 };
 
-// Filter + Sort Logic
+/**
+ * Computed:
+ * Applies filtering + searching + sorting on employees list
+ */
 const filteredEmployees = computed(() => {
   let data = state.employees.filter((emp) => {
     const query = searchQuery.value.toLowerCase();
 
     let value = "";
 
+    // Determine which field to filter by
     if (filterKey.value === "fullName") value = emp.fullName;
     if (filterKey.value === "occupation") value = emp.occupation;
     if (filterKey.value === "department") value = emp.department;
@@ -77,16 +88,18 @@ const filteredEmployees = computed(() => {
     if (filterKey.value === "terminationStatus")
       value = getTerminationStatus(emp.terminationDate);
 
+    // Global search (no filter selected)
     if (!filterKey.value) {
       return Object.values(emp).some((v) =>
         String(v).toLowerCase().includes(query),
       );
     }
 
+    // Filtered search
     return value.toLowerCase().includes(query);
   });
 
-  // Sorting
+  // Sorting logic
   if (!sortKey.value) return data;
 
   return data.sort((a, b) => {
@@ -105,12 +118,16 @@ const filteredEmployees = computed(() => {
   });
 });
 
-// Total Pages
+/**
+ * Total number of pages based on filtered results
+ */
 const totalPages = computed(() => {
   return Math.ceil(filteredEmployees.value.length / itemsPerPage);
 });
 
-// Paginated Employees
+/**
+ * Returns only employees for the current page
+ */
 const paginatedEmployees = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
@@ -118,7 +135,9 @@ const paginatedEmployees = computed(() => {
   return filteredEmployees.value.slice(start, end);
 });
 
-// Change Page
+/**
+ * Handles pagination navigation
+ */
 const changePage = (page) => {
   if (page < 1 || page > totalPages.value) {
     return;
@@ -127,6 +146,9 @@ const changePage = (page) => {
   currentPage.value = page;
 };
 
+/**
+ * Delete employee with confirmation + UI update
+ */
 const deleteEmployee = async (employeeId) => {
   try {
     const confirmDelete = window.confirm(
@@ -137,14 +159,15 @@ const deleteEmployee = async (employeeId) => {
       return;
     }
 
+    // API call to delete employee
     await axios.delete(`/api/employees/${employeeId}`);
 
-    // Remove from local state
+    // Remove deleted employee from local state
     state.employees = state.employees.filter(
       (employee) => employee.id !== employeeId,
     );
 
-    // Stay on valid page
+    // Fix pagination if current page becomes invalid
     if (currentPage.value > totalPages.value && currentPage.value > 1) {
       currentPage.value--;
     }
@@ -157,7 +180,9 @@ const deleteEmployee = async (employeeId) => {
   }
 };
 
-// Fetch Data
+/**
+ * Fetch employees on component mount
+ */
 onMounted(async () => {
   try {
     const response = await axios.get("/api/employees");
@@ -171,17 +196,19 @@ onMounted(async () => {
 </script>
 
 <template>
+  <!-- Loading state (shown while API request is in progress) -->
   <div v-if="state.isLoading" class="flex justify-center gap-3 py-6">
     <span class="text-white">Loading..</span>
     <ClipLoader color="#fff" />
   </div>
 
+  <!-- Main content (shown after data is loaded) -->
   <div v-else class="w-[95%] mx-auto my-5 text-white">
-    <!-- Filter + Sort Controls -->
+    <!-- Filter + Sort Controls Section -->
     <div
       class="grid grid-cols-1l sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 mb-5"
     >
-      <!-- Search -->
+      <!-- Global search input -->
       <input
         v-model="searchQuery"
         type="text"
@@ -189,7 +216,7 @@ onMounted(async () => {
         class="focus:border-none focus:outline-none p-2 rounded bg-gray-500"
       />
 
-      <!-- Filter Field -->
+      <!-- Filter by specific field -->
       <select
         v-model="filterKey"
         class="focus:border-none focus:outline-none p-2 rounded bg-gray-500 cursor-pointer"
@@ -202,7 +229,7 @@ onMounted(async () => {
         <option value="terminationStatus">Termination Status</option>
       </select>
 
-      <!-- Sort Field -->
+      <!-- Sort field selector -->
       <select
         v-model="sortKey"
         class="focus:border-none focus:outline-none p-2 rounded bg-gray-500 cursor-pointer"
@@ -213,7 +240,7 @@ onMounted(async () => {
         <option value="department">Department</option>
       </select>
 
-      <!-- Sort Order -->
+      <!-- Sort direction selector -->
       <select
         v-model="sortOrder"
         class="focus:border-none focus:outline-none p-2 rounded bg-gray-500 cursor-pointer"
@@ -223,8 +250,10 @@ onMounted(async () => {
       </select>
     </div>
 
+    <!-- Table wrapper (enables horizontal scroll on small screens) -->
     <div class="overflow-x-auto">
       <table class="min-w-full">
+        <!-- Table header -->
         <thead class="bg-gray-400">
           <tr>
             <th class="p-2 text-center text-md border border-gray-900">
@@ -248,32 +277,46 @@ onMounted(async () => {
           </tr>
         </thead>
 
+        <!-- Table body -->
         <tbody>
           <tr v-for="employee in paginatedEmployees" :key="employee.id">
+            <!-- Employee full name -->
             <td class="p-2 text-center text-sm border border-gray-900">
               {{ employee.fullName }}
             </td>
+
+            <!-- Employee occupation -->
             <td class="p-2 text-center text-sm border border-gray-900">
               {{ employee.occupation }}
             </td>
+
+            <!-- Employee department -->
             <td class="p-2 text-center text-sm border border-gray-900">
               {{ employee.department }}
             </td>
+
+            <!-- Derived employment status (computed from date) -->
             <td class="p-2 text-center text-sm border border-gray-900">
               {{ getEmploymentStatus(employee.dateOfEmployment) }}
             </td>
+
+            <!-- Derived termination status (computed from date) -->
             <td class="p-2 text-center text-sm border border-gray-900">
               {{ getTerminationStatus(employee.terminationDate) }}
             </td>
+
+            <!-- Actions column (view / edit / delete) -->
             <td class="p-2 text-sm border border-gray-900">
               <div class="flex justify-around">
-                <!-- Employee View -->
+                <!-- View employee details -->
                 <div class="relative inline-block group">
                   <span class="cursor-pointer">
                     <RouterLink :to="`/employee/${employee.id}`">
                       <i class="pi pi-eye"></i>
                     </RouterLink>
                   </span>
+
+                  <!-- Tooltip -->
                   <div
                     class="absolute hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded -top-10 right-0"
                   >
@@ -281,13 +324,14 @@ onMounted(async () => {
                   </div>
                 </div>
 
-                <!-- Edit Employee -->
+                <!-- Edit employee -->
                 <div class="relative inline-block group">
                   <span class="cursor-pointer">
                     <RouterLink :to="`/employee/edit/${employee.id}`">
                       <i class="pi pi-user-edit"></i>
                     </RouterLink>
                   </span>
+                  <!-- Tooltip -->
                   <div
                     class="absolute hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded -top-10 right-0"
                   >
@@ -295,13 +339,14 @@ onMounted(async () => {
                   </div>
                 </div>
 
-                <!-- Delete Employee -->
+                <!-- Delete employee -->
                 <div class="relative inline-block group">
                   <span class="cursor-pointer">
                     <button @click="deleteEmployee(employee.id)">
                       <i class="pi pi-user-minus"></i>
                     </button>
                   </span>
+                  <!-- Tooltip -->
                   <div
                     class="absolute hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded -top-10 right-0"
                   >
@@ -313,11 +358,12 @@ onMounted(async () => {
           </tr>
         </tbody>
 
-        <!-- Pagination -->
+        <!-- Pagination controls -->
         <tfoot>
           <tr>
             <td colspan="6" class="border border-gray-900 p-4">
               <div class="flex justify-between items-center">
+                <!-- Previous page button -->
                 <button
                   @click="changePage(currentPage - 1)"
                   :disabled="currentPage === 1"
@@ -326,10 +372,12 @@ onMounted(async () => {
                   Previous
                 </button>
 
+                <!-- Current page indicator -->
                 <span class="text-sm">
                   Page {{ currentPage }} of {{ totalPages }}
                 </span>
 
+                <!-- Next page button -->
                 <button
                   @click="changePage(currentPage + 1)"
                   :disabled="currentPage === totalPages"
@@ -343,6 +391,8 @@ onMounted(async () => {
         </tfoot>
       </table>
     </div>
+
+    <!-- Create new employee button -->
     <div class="flex justify-end w-100 mt-3">
       <RouterLink
         to="/employee/create"
