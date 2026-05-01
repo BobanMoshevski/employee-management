@@ -1,43 +1,46 @@
 import { createRouter, createWebHistory } from "vue-router";
-import EmployeesView from "@/views/EmployeesView.vue";
-import EmployeeView from "@/views/EmployeeView.vue";
-import CreateEmployeeView from "@/views/CreateEmployeeView.vue";
-import EditEmployeeView from "@/views/EditEmployeeView.vue";
-import LoginView from "@/views/LoginView.vue";
-import NotFoundView from "@/views/NotFoundView.vue";
 
 const router = createRouter({
+  // Use HTML5 history mode (clean URLs without #)
   history: createWebHistory(import.meta.env.BASE_URL),
+  // Application route definitions
   routes: [
     {
+      // Home page - shows list of employees
       path: "/",
       name: "employees",
-      component: EmployeesView,
+      component: () => import("@/views/EmployeesView.vue"),
     },
     {
+      // Employee details page (dynamic route using ID)
       path: "/employee/:id",
       name: "employee",
-      component: EmployeeView,
+      component: () => import("@/views/EmployeeView.vue"),
     },
     {
+      // Create new employee page
       path: "/employee/create",
       name: "create-employee",
-      component: CreateEmployeeView,
+      component: () => import("@/views/CreateEmployeeView.vue"),
     },
     {
+      // Edit existing employee page (uses ID to load data)
       path: "/employee/edit/:id",
       name: "employee-edit",
-      component: EditEmployeeView,
+      component: () => import("@/views/EditEmployeeView.vue"),
     },
     {
+      // Login page for authentication
       path: "/login",
       name: "login",
-      component: LoginView,
+      component: () => import("@/views/LoginView.vue"),
     },
     {
+      // Catch-all route (404 page)
+      // Matches any undefined route
       path: "/:catchAll(.*)",
       name: "not-found",
-      component: NotFoundView,
+      component: () => import("@/views/NotFoundView.vue"),
     },
   ],
 });
