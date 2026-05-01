@@ -23,6 +23,10 @@ const itemsPerPage = 10;
 
 // Employment Status
 const getEmploymentStatus = (dateOfEmployment) => {
+  if (!dateOfEmployment) {
+    return "No date selected";
+  }
+
   const today = new Date();
   const employmentDate = new Date(dateOfEmployment);
 
@@ -39,7 +43,7 @@ const getEmploymentStatus = (dateOfEmployment) => {
 // Termination Status
 const getTerminationStatus = (terminationDate) => {
   if (!terminationDate) {
-    return "";
+    return "No date selected";
   }
 
   const today = new Date();
