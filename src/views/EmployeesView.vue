@@ -2,6 +2,7 @@
 import { RouterLink } from "vue-router";
 import { reactive, ref, computed, onMounted } from "vue";
 import { ClipLoader } from "vue-spinner";
+import { useToast } from "vue-toastification";
 import axios from "axios";
 
 const state = reactive({
@@ -20,6 +21,8 @@ const sortOrder = ref("asc");
 // Pagination State
 const currentPage = ref(1);
 const itemsPerPage = 10;
+
+const toast = useToast();
 
 // Employment Status
 const getEmploymentStatus = (dateOfEmployment) => {
@@ -122,6 +125,36 @@ const changePage = (page) => {
   }
 
   currentPage.value = page;
+};
+
+const deleteEmployee = async (employeeId) => {
+  try {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this employee?",
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    await axios.delete(`/api/employees/${employeeId}`);
+
+    // Remove from local state
+    state.employees = state.employees.filter(
+      (employee) => employee.id !== employeeId,
+    );
+
+    // Stay on valid page
+    if (currentPage.value > totalPages.value && currentPage.value > 1) {
+      currentPage.value--;
+    }
+
+    toast.success("Employee Deleted Successfully");
+  } catch (error) {
+    console.log("Error Deleting Employee", error);
+
+    toast.error("Employee Was Not Deleted");
+  }
 };
 
 // Fetch Data
@@ -265,7 +298,7 @@ onMounted(async () => {
                 <!-- Delete Employee -->
                 <div class="relative inline-block group">
                   <span class="cursor-pointer">
-                    <button>
+                    <button @click="deleteEmployee(employee.id)">
                       <i class="pi pi-user-minus"></i>
                     </button>
                   </span>
