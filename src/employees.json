@@ -1,13 +1,13 @@
 {
   "employees": [
     {
-      "id": "EMP001",
       "code": "EMP001",
       "fullName": "Nicole Berry",
       "occupation": "IT Support",
       "department": "Research",
       "dateOfEmployment": "2016-07-06",
-      "terminationDate": null
+      "terminationDate": null,
+      "id": "EMP001"
     },
     {
       "id": "EMP002",
@@ -449,15 +449,6 @@
       "department": "Logistics",
       "dateOfEmployment": "2026-02-11",
       "terminationDate": null
-    },
-    {
-      "code": "EMP0051",
-      "fullName": "Boban Moshevski",
-      "occupation": "asd",
-      "department": "asd",
-      "dateOfEmployment": "",
-      "terminationDate": "",
-      "id": "8Wol-K9_tqU"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

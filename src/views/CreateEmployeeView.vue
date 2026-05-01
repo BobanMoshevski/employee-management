@@ -89,7 +89,7 @@ const discardEmployee = async () => {
 <template>
   <div class="w-[95%] md:w-[70%] lg:w-[50%] mx-auto text-white my-5">
     <form class="border rounded-lg p-5" @submit.prevent="handleSubmit">
-      <h2 class="text-3xl text-center font-semibold mb-6">Add Job</h2>
+      <h2 class="text-3xl text-center font-semibold mb-6">Create Employee</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-sm font-bold mb-2"> Employee Code </label>
