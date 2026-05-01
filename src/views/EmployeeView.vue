@@ -66,7 +66,7 @@ onMounted(async () => {
         Employee date of employment:
         {{
           state.employee.dateOfEmployment === "" ||
-          state.employee.terminationDate === null
+          state.employee.dateOfEmployment === null
             ? "No date selected"
             : state.employee.dateOfEmployment
         }}
