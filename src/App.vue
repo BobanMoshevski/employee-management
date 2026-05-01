@@ -1,3 +1,9 @@
+<script setup>
+import Navbar from "@/components/Navbar.vue";
+import { RouterView } from "vue-router";
+</script>
+
 <template>
-  <h1>Employee Management</h1>
+  <Navbar />
+  <RouterView />
 </template>
